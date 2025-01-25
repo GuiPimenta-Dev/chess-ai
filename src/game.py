@@ -119,7 +119,7 @@ class Game:
                     target_square = self.board.squares[possible_square[0]][
                         possible_square[1]
                     ]
-                    if target_square.has_enemy(initial_square.piece.color):
+                    if target_square.has_enemy(initial_square.piece):
                         self.possible_moves.append(
                             Move(
                                 initial_row=initial_square.row,

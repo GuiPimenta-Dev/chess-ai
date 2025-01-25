@@ -9,7 +9,7 @@ class Main:
     pygame.init()
     self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Chess")
-    self.game = Game(play_as_white=True)
+    self.game = Game(play_as_white=False)
     self.board = self.game.board
     self.dragger = self.game.dragger
   
