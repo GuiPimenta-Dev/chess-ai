@@ -11,9 +11,11 @@ from square import Square
 class Game:
     def __init__(self, play_as_white=True):
         self.play_as_white = play_as_white
+        self.hovered_square = None
         self.board = Board(play_as_white)
         self.dragger = Dragger()
         self.turn = "white"
+        self.last_move = None
         self.possible_moves = []
 
     def show_bg(self, screen):
@@ -47,9 +49,24 @@ class Game:
                     square.piece.texture_rect = img.get_rect(center=img_center)
                     screen.blit(img, square.piece.texture_rect)
 
+    def show_last_move(self, screen):
+        if self.last_move:
+            initial_row = self.last_move.initial_row
+            initial_col = self.last_move.initial_col
+            target_row = self.last_move.target_row
+            target_col = self.last_move.target_col
+
+            initial_rect = (initial_col * SQUARE_SIZE, initial_row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
+            target_rect = (target_col * SQUARE_SIZE, target_row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
+            
+            color = (172, 195, 51)
+            pygame.draw.rect(screen, color, initial_rect)
+            pygame.draw.rect(screen, color, target_rect)
+
     def set_possible_moves(self, row, col):
         piece = self.board.squares[row][col].piece
         initial_square = Square(row, col, piece)
+    
 
         if not isinstance(initial_square.piece, Pawn):
 
@@ -139,10 +156,20 @@ class Game:
             return
 
         self.board.move(self.possible_moves, move)
+        self.last_move = move
         self.dragger.undrag_piece()
         self._switch_turn()
         self._reset_possible_moves()
 
+    def show_hover(self, surface):
+        if self.hovered_square:
+            color = (180, 180, 180)
+            rect = (self.hovered_square.col * SQUARE_SIZE, self.hovered_square.row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
+            pygame.draw.rect(surface, color, rect, width=3)
+
+    def set_hover(self, row, col):
+        self.hovered_square = self.board.squares[row][col]
+    
     def _switch_turn(self):
         self.turn = "white" if self.turn == "black" else "black"
 

@@ -16,8 +16,10 @@ class Main:
   def run(self):
     while True:
       self.game.show_bg(self.screen)
-      self.game.show_pieces(self.screen)
+      self.game.show_hover(self.screen)
+      self.game.show_last_move(self.screen)
       self.game.show_possible_moves(self.screen)
+      self.game.show_pieces(self.screen)
       
       if self.dragger.dragging:
         self.dragger.update_blit(self.screen)
@@ -29,7 +31,7 @@ class Main:
           clicked_row = mouse_y // SQUARE_SIZE
           clicked_col = mouse_x // SQUARE_SIZE
           square = self.board.squares[clicked_row][clicked_col]
-          if square.has_piece() and square.piece.color != self.game.turn:
+          if not square.has_piece() or square.piece.color != self.game.turn:
             continue
           
           self.dragger.update_mouse(event.pos)
@@ -39,11 +41,19 @@ class Main:
           self.dragger.drag_piece(square.piece)
         
         elif event.type == pygame.MOUSEMOTION:
+          mouse_x, mouse_y = event.pos
+          clicked_row = mouse_y // SQUARE_SIZE
+          clicked_col = mouse_x // SQUARE_SIZE
+          
+          self.game.set_hover(clicked_row, clicked_col)
+          
           if self.dragger.dragging:
             self.dragger.update_mouse(event.pos)
             self.game.show_bg(self.screen)
-            self.game.show_pieces(self.screen)
+            self.game.show_hover(self.screen)
+            self.game.show_last_move(self.screen)
             self.game.show_possible_moves(self.screen)
+            self.game.show_pieces(self.screen)
             self.dragger.update_blit(self.screen)
         
         elif event.type == pygame.MOUSEBUTTONUP:
