@@ -18,8 +18,8 @@ class Main:
       self.game.show_bg(self.screen)
       self.game.show_hover(self.screen)
       self.game.show_last_move(self.screen)
-      self.game.show_possible_moves(self.screen)
       self.game.show_pieces(self.screen)
+      self.game.show_possible_moves(self.screen)
       
       if self.dragger.dragging:
         self.dragger.update_blit(self.screen)
@@ -52,8 +52,8 @@ class Main:
             self.game.show_bg(self.screen)
             self.game.show_hover(self.screen)
             self.game.show_last_move(self.screen)
-            self.game.show_possible_moves(self.screen)
             self.game.show_pieces(self.screen)
+            self.game.show_possible_moves(self.screen)
             self.dragger.update_blit(self.screen)
         
         elif event.type == pygame.MOUSEBUTTONUP:
