@@ -1,4 +1,5 @@
 from const import COLS, ROWS
+from move import Move
 from pieces import Piece
 
 
@@ -25,7 +26,7 @@ class Knight(Piece):
             new_row = square.row + dr
             new_col = square.col + dc
             if 0 <= new_row < ROWS and 0 <= new_col < COLS:
-                possible_moves.append([(new_row, new_col)])
+                possible_moves.append([Move(initial_row=square.row, initial_col=square.col, target_row=new_row, target_col=new_col, piece=self)])
 
         return possible_moves
 

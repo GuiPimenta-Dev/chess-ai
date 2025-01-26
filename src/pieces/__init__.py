@@ -36,6 +36,10 @@ class Piece(ABC):
         self.moving = False
         self.moves = []
         self.possible_moves = []
+    
+    @property
+    def has_moved(self):
+        return len(self.moves) > 0
 
     def __str__(self):
         return f"{self.color.capitalize()} {self.name} ({self.id})"
@@ -54,29 +58,14 @@ class Piece(ABC):
         possible_moves = self._get_possible_moves_in_each_direction(initial_square, grid)
         for possible_direction in possible_moves:
             for possible_square in possible_direction:
-                target_square = grid.get_square_by_row_and_col(possible_square[0], possible_square[1])
+                target_square = grid.get_square_by_row_and_col(possible_square.target_row, possible_square.target_col)
                 if not target_square.has_piece():
-                    move = Move(
-                        initial_row=initial_square.row,
-                        initial_col=initial_square.col,
-                        target_row=target_square.row,
-                        target_col=target_square.col,
-                        piece=initial_square.piece,
-                        captured_piece=None
-                    )
-                    if move.is_inside_grid():
-                        moves.append(move)
+                    if possible_square.is_inside_grid():
+                        moves.append(possible_square)
                 elif target_square.has_enemy(self.color):
-                    move = Move(
-                        initial_row=initial_square.row,
-                        initial_col=initial_square.col,
-                        target_row=target_square.row,
-                        target_col=target_square.col,
-                        piece=initial_square.piece,
-                        captured_piece=target_square.piece
-                    )
-                    if move.is_inside_grid():
-                        moves.append(move)
+                    possible_square.captured_piece = target_square.piece
+                    if possible_square.is_inside_grid():
+                        moves.append(possible_square)
                     break
                 else:
                     break

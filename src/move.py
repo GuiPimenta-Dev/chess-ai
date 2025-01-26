@@ -11,6 +11,7 @@ class Move:
         piece,
         captured_piece = None,
         promotion=None,
+        castling_square=None,
     ):
         self.initial_row = initial_row
         self.initial_col = initial_col
@@ -19,6 +20,11 @@ class Move:
         self.piece = piece
         self.captured_piece = captured_piece
         self.promotion = promotion
+        self.castling_square = castling_square
+
+    @property
+    def is_castling(self):
+        return self.castling_square is not None
 
     def is_inside_grid(self):
         return 0 <= self.target_row < ROWS and 0 <= self.target_col < COLS

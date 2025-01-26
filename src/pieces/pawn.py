@@ -1,3 +1,4 @@
+from move import Move
 from pieces import Piece
 
 from square import Square
@@ -17,14 +18,14 @@ class Pawn(Piece):
             new_row = square.row + i * self.direction
             target_square: Square = grid.get_square_by_row_and_col(new_row, square.col)
             if target_square.is_empty():
-                possible_moves.append([(new_row, square.col)])
+                possible_moves.append([Move(initial_row=square.row, initial_col=square.col, target_row=new_row, target_col=square.col, piece=self)])
 
         for i in [-1, 1]:
             new_row = square.row + self.direction
             new_col = square.col + i
             target_square: Square = grid.get_square_by_row_and_col(new_row, new_col)
             if target_square.has_enemy(self.color):
-                possible_moves.append([(new_row, new_col)])
+                possible_moves.append([Move(initial_row=square.row, initial_col=square.col, target_row=new_row, target_col=new_col, piece=self)])
 
     
         return possible_moves

@@ -112,6 +112,38 @@ class Grid:
           self.squares[7][3].piece = black_king
   
   def move_piece(self, move):
+    if move.is_castling:
+        # Move the King
+        king_target_col = move.target_col
+        king_target_row = move.target_row
+        
+        # Move the King to its new position (2 squares towards the Rook)
+        self.squares[king_target_row][king_target_col].piece = move.piece
+        self.squares[move.initial_row][move.initial_col].piece = None
+        
+        # Update the King's position (important for any future logic)
+        move.piece.row = king_target_row
+        move.piece.col = king_target_col
+        
+        # Move the Rook (the Rook should move 1 square next to the King)
+        if king_target_col < move.initial_col:  # Rook is to the left of the King
+            rook_initial_col = 0  # Rook is initially in column 0
+            rook_target_col = king_target_col + 1  # Rook moves to the right of the King
+        else:  # Rook is to the right of the King
+            rook_initial_col = 7  # Rook is initially in column 7
+            rook_target_col = king_target_col - 1  # Rook moves to the left of the King
+        
+        # Move the Rook to the new position
+        rook_piece = self.squares[move.initial_row][rook_initial_col].piece
+        self.squares[king_target_row][rook_target_col].piece = rook_piece
+        self.squares[move.initial_row][rook_initial_col].piece = None
+        
+        # Update the Rook's position
+        rook_piece.row = king_target_row
+        rook_piece.col = rook_target_col
+
+    else:
+        # Regular move (non-castling)
         self.squares[move.target_row][move.target_col].piece = move.piece
         self.squares[move.initial_row][move.initial_col].piece = None
   
@@ -132,6 +164,15 @@ class Grid:
                 squares_between.append(self.squares[new_row][new_col])
 
         return squares_between
+  
+  def get_squares_by_piece_name_and_color(self, name, color):
+        squares = []
+        for row in range(ROWS):
+            for col in range(COLS):
+                piece = self.squares[row][col].piece
+                if piece and piece.name == name and piece.color == color:
+                    squares.append(self.squares[row][col])
+        return squares
   
   def get_square_by_piece_name_and_color(self, name, color):
         for row in range(ROWS):
