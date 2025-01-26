@@ -14,6 +14,12 @@ class Grid:
     self.squares = [[None for _ in range(COLS)] for _ in range(COLS)]
     self._create()
     self._add_pieces(play_as_white)
+    self.moves = []
+
+  def get_last_move(self):
+        if len(self.moves) > 0:
+            return self.moves[-1]
+        return None
   
   def _create(self):
         for row in range(ROWS):
@@ -112,7 +118,22 @@ class Grid:
           self.squares[7][3].piece = black_king
   
   def move_piece(self, move):
-    if move.is_castling:
+    self.moves.append(move)
+      
+    if move.en_passant:
+        opponent_row = move.target_row
+        opponent_col = move.target_col
+        
+        # The opponent's pawn is on the adjacent column, but we must remove it from the square it passed through
+        self.squares[opponent_row][opponent_col].piece = None  # Remove the opponent's pawn
+
+        # Step 2: Move the player's pawn to the target square
+        self.squares[move.target_row - move.piece.direction][move.target_col ].piece = None
+        self.squares[move.initial_row ][move.initial_col ].piece = None
+        self.squares[move.target_row][move.target_col].piece = move.piece
+
+
+    elif move.is_castling:
         # Move the King
         king_target_col = move.target_col
         king_target_row = move.target_row

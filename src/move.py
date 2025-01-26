@@ -12,6 +12,7 @@ class Move:
         captured_piece = None,
         promotion=None,
         castling_square=None,
+        en_passant=False,
     ):
         self.initial_row = initial_row
         self.initial_col = initial_col
@@ -21,6 +22,7 @@ class Move:
         self.captured_piece = captured_piece
         self.promotion = promotion
         self.castling_square = castling_square
+        self.en_passant = en_passant
 
     @property
     def is_castling(self):

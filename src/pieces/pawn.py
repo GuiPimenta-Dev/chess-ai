@@ -27,9 +27,29 @@ class Pawn(Piece):
             if target_square.has_enemy(self.color):
                 possible_moves.append([Move(initial_row=square.row, initial_col=square.col, target_row=new_row, target_col=new_col, piece=self)])
 
-    
+        possible_moves.extend(self._get_en_passant_moves(square, grid))
+
         return possible_moves
 
+    def _get_en_passant_moves(self, square: Square, grid):
+        en_passant_moves = []
+        
+        # Check if the last move was a 2-square pawn move from the opponent
+        last_move = grid.get_last_move()
+        if last_move:
+            last_piece = last_move.piece
+            if isinstance(last_piece, Pawn) and last_piece.color != self.color:
+                # Check if the opponent's pawn moved two squares forward
+                if abs(last_move.initial_row - last_move.target_row) == 2 and square.row == last_move.target_row:
+                    # Check if the opponent's pawn is adjacent
+                    if abs(square.col - last_move.target_col) == 1:
+                        en_passant_target_col = last_move.target_col
+                        en_passant_target_row = square.row + self.direction
+                        en_passant_moves.append([Move(initial_row=square.row, initial_col=square.col,
+                                                      target_row=en_passant_target_row, target_col=en_passant_target_col,
+                                                      piece=self, en_passant=True)])
+
+        return en_passant_moves
 
 class BlackPawn(Pawn):
     def __init__(self, id, direction):
