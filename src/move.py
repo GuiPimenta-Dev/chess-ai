@@ -1,4 +1,4 @@
-from pieces import Piece
+from const import COLS, ROWS
 
 
 class Move:
@@ -8,8 +8,8 @@ class Move:
         initial_col,
         target_row,
         target_col,
-        piece: Piece,
-        captured_piece: Piece = None,
+        piece,
+        captured_piece = None,
         promotion=None,
     ):
         self.initial_row = initial_row
@@ -19,6 +19,9 @@ class Move:
         self.piece = piece
         self.captured_piece = captured_piece
         self.promotion = promotion
+
+    def is_inside_grid(self):
+        return 0 <= self.target_row < ROWS and 0 <= self.target_col < COLS
 
     def __repr__(self):
         return f"({self.row}, {self.col})"

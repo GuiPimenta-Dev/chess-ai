@@ -1,4 +1,5 @@
-from pieces import Piece
+
+from const import COLS, ROWS
 
 
 class Square:
@@ -6,6 +7,9 @@ class Square:
         self.row = row
         self.col = col
         self.piece = piece
+
+    def is_empty(self):
+        return self.piece is None
 
     def has_piece(self):
         return self.piece is not None
@@ -15,3 +19,6 @@ class Square:
 
     def has_enemy(self, color):
         return self.piece and self.piece.color != color
+
+    def is_inside_grid(self):
+        return 0 <= self.row < ROWS and 0 <= self.col < COLS

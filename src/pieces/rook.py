@@ -7,15 +7,15 @@ class Rook(Piece):
             id=id, name="Rook", direction=direction, color=color, asset=asset, value=5
         )
 
-    def possible_moves(self, row, col):
+    def _get_possible_moves_in_each_direction(self, square, _):
         possible_moves = []
         directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 
         for dr, dc in directions:
             directional_moves = []
             for i in range(1, 8):
-                new_row = row + i * dr
-                new_col = col + i * dc
+                new_row = square.row + i * dr
+                new_col = square.col + i * dc
                 if 0 <= new_row < 8 and 0 <= new_col < 8:
                     directional_moves.append((new_row, new_col))
                 else:

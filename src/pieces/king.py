@@ -8,7 +8,7 @@ class King(Piece):
             id=id, name="King", direction=direction, color=color, asset=asset
         )
 
-    def possible_moves(self, row, col):
+    def _get_possible_moves_in_each_direction(self, square, _):
         possible_moves = []
         directions = [
             (-1, -1),
@@ -22,8 +22,8 @@ class King(Piece):
         ]
 
         for dr, dc in directions:
-            new_row = row + dr
-            new_col = col + dc
+            new_row = square.row + dr
+            new_col = square.col + dc
             if 0 <= new_row < ROWS and 0 <= new_col < COLS:
                 possible_moves.append([(new_row, new_col)])
 

@@ -11,6 +11,7 @@ class Main:
     pygame.display.set_caption("Chess")
     self.game = Game(play_as_white=True)
     self.board = self.game.board
+    self.grid = self.board.grid
     self.dragger = self.game.dragger
   
   def run(self):
@@ -31,19 +32,11 @@ class Main:
           mouse_x, mouse_y = event.pos
           clicked_row = mouse_y // SQUARE_SIZE
           clicked_col = mouse_x // SQUARE_SIZE
-          square = self.board.squares[clicked_row][clicked_col]
-          if not square.has_piece() or square.piece.color != self.game.turn:
+          square = self.grid.get_square_by_row_and_col(clicked_row, clicked_col)
+          if not square.has_piece() or square.piece.color != self.board.turn:
             continue
           
-          
           self.dragger.update_mouse(event.pos)
-          
-          self.game.set_possible_moves(clicked_row, clicked_col)
-          
-          if self.game.check[self.game.turn]["checks"]:
-            if not self.game.is_able_to_protect_king(self.game.turn):
-              continue
-          
           self.dragger.save_initial(event.pos)
           self.dragger.drag_piece(square.piece)
         
@@ -68,12 +61,12 @@ class Main:
             self.dragger.update_blit(self.screen)
         
         elif event.type == pygame.MOUSEBUTTONUP:
-          self.dragger.undrag_piece()
           self.dragger.update_mouse(event.pos)
           clicked_row = self.dragger.mouse_y // SQUARE_SIZE
           clicked_col = self.dragger.mouse_x // SQUARE_SIZE
+          self.board.move(clicked_row, clicked_col, self.dragger.piece)
+          self.dragger.undrag_piece()
           
-          self.game.move(clicked_row, clicked_col)
         
         elif event.type == pygame.QUIT:
           pygame.quit()
@@ -81,8 +74,6 @@ class Main:
           
       pygame.display.update()
       
-  def _get_square(self, row, col):
-    return self.board.squares[row][col]
   
   
 

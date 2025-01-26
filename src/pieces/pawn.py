@@ -1,6 +1,6 @@
-from const import COLS, ROWS
 from pieces import Piece
-from typing import override
+
+from square import Square
 
 
 class Pawn(Piece):
@@ -9,23 +9,24 @@ class Pawn(Piece):
             id=id, name="Pawn", direction=direction, color=color, asset=asset, value=1
         )
 
-    def possible_moves(self, row, col):
+    def _get_possible_moves_in_each_direction(self, square:Square, grid):
         possible_moves = []
-        steps = 1 if self.moved else 2
+        
+        steps = 1 if len(self.moves) > 0 else 2
         for i in range(1, steps + 1):
-            new_row = row + i * self.direction
-            if 0 <= new_row < ROWS:
-                possible_moves.append([(new_row, col)])
+            new_row = square.row + i * self.direction
+            target_square: Square = grid.get_square_by_row_and_col(new_row, square.col)
+            if target_square.is_empty():
+                possible_moves.append([(new_row, square.col)])
 
-        return possible_moves
-
-    def possible_attacks(self, row, col):
-        possible_moves = []
         for i in [-1, 1]:
-            new_row = row + self.direction
-            new_col = col + i
-            if 0 <= new_row < ROWS and 0 <= new_col < COLS:
+            new_row = square.row + self.direction
+            new_col = square.col + i
+            target_square: Square = grid.get_square_by_row_and_col(new_row, new_col)
+            if target_square.has_enemy(self.color):
                 possible_moves.append([(new_row, new_col)])
+
+    
         return possible_moves
 
 
