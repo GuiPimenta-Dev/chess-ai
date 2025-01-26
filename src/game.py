@@ -82,9 +82,8 @@ class Game:
         check_color = (255, 180, 180)
         for color in ["white", "black"]:
             if self.board.is_king_in_check(color):
-                king_square = self.board.grid.get_square_by_piece_name_and_color("King", color)
                 squares = []
-                for move in king_square.piece.checks:
+                for move in self.board.get_checks(color):
                     squares += self.board.grid.get_squares_between(move)
                 
                 for square in squares:

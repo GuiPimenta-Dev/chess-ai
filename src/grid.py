@@ -139,6 +139,7 @@ class Grid:
                 piece = self.squares[row][col].piece
                 if piece and piece.name == name and piece.color == color:
                     return self.squares[row][col]
+        return None
     
   def get_square_by_row_and_col(self, row, col):
         try:
