@@ -10,7 +10,7 @@ class Board:
         self.grid = Grid(play_as_white)
         self.turn = "white"
         self.moves = []
-        self.possible_moves = self.get_all_possible_moves()
+        self.possible_moves = self.get_all_possible_moves(self.turn)
 
     def move(self, row, col, piece):
         move = None
@@ -22,23 +22,28 @@ class Board:
         if not move:
             return
 
-        self.grid.squares[move.target_row][move.target_col].piece = move.piece
-        self.grid.squares[move.initial_row][move.initial_col].piece = None
+        self.grid.move_piece(move)
         self.moves.append(move)
         move.piece.add_move(move)
         self._switch_turn()
 
-    def get_all_possible_moves(self):
+    def is_king_in_check(self, color):
+        king = self.grid.get_square_by_piece_name_and_color("King", color).piece
+        enemy_color = "black" if color == "white" else "white"
+        enemy_possible_moves = self.get_all_possible_moves(enemy_color)
+        return king.is_in_check(enemy_possible_moves, self.grid)
+        
+    def get_all_possible_moves(self, color):
         moves = []
         for row in range(ROWS):
             for col in range(COLS):
                 piece: Piece = self.grid.get_square_by_row_and_col(row, col).piece
-                if piece and piece.color == self.turn:
+                if piece and piece.color == color:
                     moves.extend(piece.get_possible_moves(row, col, self.grid))
         return moves
 
     def _switch_turn(self):
         self.turn = "white" if self.turn == "black" else "black"
-        self.possible_moves = self.get_all_possible_moves()
+        self.possible_moves = self.get_all_possible_moves(self.turn)
     
     

@@ -81,10 +81,15 @@ class Game:
     def show_check(self, screen):
         check_color = (255, 180, 180)
         for color in ["white", "black"]:
-            if self.check[color]["checks"]:
-                king_square = self.board.find_square_of_piece("King", color)
-                rect = (king_square.col * SQUARE_SIZE, king_square.row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
-                pygame.draw.rect(screen, check_color, rect)
+            if self.board.is_king_in_check(color):
+                king_square = self.board.grid.get_square_by_piece_name_and_color("King", color)
+                squares = []
+                for move in king_square.piece.checks:
+                    squares += self.board.grid.get_squares_between(move)
+                
+                for square in squares:
+                    rect = (square.col * SQUARE_SIZE, square.row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
+                    pygame.draw.rect(screen, check_color, rect)
 
     def set_hover(self, row, col):
         self.hovered_square = self.board.grid.get_square_by_row_and_col(row, col)

@@ -111,11 +111,33 @@ class Grid:
           self.squares[0][3].piece = white_king
           self.squares[7][3].piece = black_king
   
-  def get_square_by_piece_id_and_color(self, id, color):
+  def move_piece(self, move):
+        self.squares[move.target_row][move.target_col].piece = move.piece
+        self.squares[move.initial_row][move.initial_col].piece = None
+  
+  def get_squares_between(self, move):
+        initial_square = self.get_square_by_row_and_col(move.initial_row, move.initial_col)
+        target_square = self.get_square_by_row_and_col(move.target_row, move.target_col)
+        squares_between = [initial_square, target_square]
+        dr = move.target_row - move.initial_row
+        dc = move.target_col - move.initial_col
+        steps = max(abs(dr), abs(dc))
+        dr //= steps
+        dc //= steps
+
+        if not move.piece.name == "Knight":
+            for i in range(1, steps):
+                new_row = move.initial_row + i * dr
+                new_col = move.initial_col + i * dc
+                squares_between.append(self.squares[new_row][new_col])
+
+        return squares_between
+  
+  def get_square_by_piece_name_and_color(self, name, color):
         for row in range(ROWS):
             for col in range(COLS):
                 piece = self.squares[row][col].piece
-                if piece and piece.id == id and piece.color == color:
+                if piece and piece.name == name and piece.color == color:
                     return self.squares[row][col]
     
   def get_square_by_row_and_col(self, row, col):
