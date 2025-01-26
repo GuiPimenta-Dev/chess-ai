@@ -30,12 +30,6 @@ class Board:
         self.moves.append(move)
         move.piece.add_move(move)
         self._switch_turn()
-
-    # def is_king_in_check(self, color):
-    #     king = self.grid.get_square_by_piece_name_and_color("King", color).piece
-    #     enemy_color = "black" if color == "white" else "white"
-    #     enemy_possible_moves = self._get_all_possible_moves(enemy_color)
-    #     return king.is_in_check(enemy_possible_moves, self.grid)
         
     def _get_all_possible_moves(self, color):
         moves = []
@@ -54,10 +48,35 @@ class Board:
     
     def get_possible_moves_by_color(self, color):
         is_king_in_check = self.is_king_in_check(color)
+        
         if is_king_in_check:
             return self._get_protective_moves(color)
-        else:
-            return self._get_all_possible_moves(color)
+
+        safe_moves = []
+        for row in range(ROWS):
+            for col in range(COLS):
+                square = self.grid.get_square_by_row_and_col(row, col)
+                if square.has_piece() and square.piece.color == color:
+                    piece = square.piece
+                    possible_moves = piece.get_possible_moves(row, col, self.grid)
+                    
+                    for move in possible_moves:
+                        # Simulate the move
+                        captured_piece = self.grid.get_square_by_row_and_col(move.target_row, move.target_col).piece
+                        initial_square = self.grid.get_square_by_row_and_col(move.initial_row, move.initial_col)
+                        target_square = self.grid.get_square_by_row_and_col(move.target_row, move.target_col)
+                        
+                        target_square.piece = piece
+                        initial_square.piece = None
+                        
+                        if not self.is_king_in_check(color):
+                            safe_moves.append(move)
+
+                        # Undo the simulated move
+                        initial_square.piece = piece
+                        target_square.piece = captured_piece
+
+        return safe_moves
 
 
     
