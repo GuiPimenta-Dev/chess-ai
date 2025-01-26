@@ -14,8 +14,6 @@ class Game:
         self.hovered_square = None
         self.board = Board(play_as_white)
         self.dragger = Dragger()
-        self.turn = "white"
-        self.last_move = None
         self.check = {
             "white": {
                 "checks": [],
@@ -59,11 +57,12 @@ class Game:
                     screen.blit(img, square.piece.texture_rect)
 
     def show_last_move(self, screen):
-        if self.last_move:
-            initial_row = self.last_move.initial_row
-            initial_col = self.last_move.initial_col
-            target_row = self.last_move.target_row
-            target_col = self.last_move.target_col
+        if len(self.board.moves) > 0:
+            last_move = self.board.moves[-1]
+            initial_row = last_move.initial_row
+            initial_col = last_move.initial_col
+            target_row = last_move.target_row
+            target_col = last_move.target_col
 
             initial_rect = (initial_col * SQUARE_SIZE, initial_row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
             target_rect = (target_col * SQUARE_SIZE, target_row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
@@ -72,24 +71,6 @@ class Game:
             pygame.draw.rect(screen, color, initial_rect)
             pygame.draw.rect(screen, color, target_rect)
 
-
-    # def move(self, row, col):
-    #     square = self.board.squares[row][col]
-    #     move = self._find_move(square.row, square.col)
-    #     if not move:
-    #         self._reset_possible_moves()
-    #         return
-
-    #     if self.check[self.turn]["checks"]:
-    #         if move not in self.check[self.turn]["protective_moves"]:
-    #           self._reset_possible_moves()
-    #           return
-
-    #     self.board.move(self.possible_moves, move)
-    #     self.last_move = move
-    #     self.dragger.undrag_piece()
-    #     self._switch_turn()
-    #     self._reset_possible_moves()
 
     def show_hover(self, screen):
         if self.hovered_square:
