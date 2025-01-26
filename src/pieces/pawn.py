@@ -24,7 +24,8 @@ class Pawn(Piece):
         for i in [-1, 1]:
             new_row = row + self.direction
             new_col = col + i
-            possible_moves.append([(new_row, new_col)])
+            if 0 <= new_row < ROWS and 0 <= new_col < COLS:
+                possible_moves.append([(new_row, new_col)])
         return possible_moves
 
 

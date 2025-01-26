@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-from const import WIDTH, HEIGHT, SQUARE_SIZE
+from const import COLS, ROWS, WIDTH, HEIGHT, SQUARE_SIZE
 from game import Game
 
 class Main:
@@ -9,7 +9,7 @@ class Main:
     pygame.init()
     self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Chess")
-    self.game = Game(play_as_white=False)
+    self.game = Game(play_as_white=True)
     self.board = self.game.board
     self.dragger = self.game.dragger
   
@@ -18,6 +18,7 @@ class Main:
       self.game.show_bg(self.screen)
       self.game.show_hover(self.screen)
       self.game.show_last_move(self.screen)
+      self.game.show_check(self.screen)
       self.game.show_pieces(self.screen)
       self.game.show_possible_moves(self.screen)
       
@@ -34,8 +35,14 @@ class Main:
           if not square.has_piece() or square.piece.color != self.game.turn:
             continue
           
+          
           self.dragger.update_mouse(event.pos)
+          
           self.game.set_possible_moves(clicked_row, clicked_col)
+          
+          if self.game.check[self.game.turn]["checks"]:
+            if not self.game.is_able_to_protect_king(self.game.turn):
+              continue
           
           self.dragger.save_initial(event.pos)
           self.dragger.drag_piece(square.piece)
@@ -45,6 +52,9 @@ class Main:
           clicked_row = mouse_y // SQUARE_SIZE
           clicked_col = mouse_x // SQUARE_SIZE
           
+          if clicked_col < 0 or clicked_col >= COLS or clicked_row < 0 or clicked_row >= ROWS:
+            continue
+          
           self.game.set_hover(clicked_row, clicked_col)
           
           if self.dragger.dragging:
@@ -52,6 +62,7 @@ class Main:
             self.game.show_bg(self.screen)
             self.game.show_hover(self.screen)
             self.game.show_last_move(self.screen)
+            self.game.show_check(self.screen)
             self.game.show_pieces(self.screen)
             self.game.show_possible_moves(self.screen)
             self.dragger.update_blit(self.screen)
@@ -61,6 +72,7 @@ class Main:
           self.dragger.update_mouse(event.pos)
           clicked_row = self.dragger.mouse_y // SQUARE_SIZE
           clicked_col = self.dragger.mouse_x // SQUARE_SIZE
+          
           self.game.move(clicked_row, clicked_col)
         
         elif event.type == pygame.QUIT:
@@ -71,6 +83,8 @@ class Main:
       
   def _get_square(self, row, col):
     return self.board.squares[row][col]
+  
+  
 
 if __name__ == "__main__":
   Main().run()

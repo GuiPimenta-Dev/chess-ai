@@ -108,10 +108,10 @@ class Board:
             self.squares[0][5].piece = white_bishops[1]
             self.squares[7][2].piece = black_bishops[0]
             self.squares[7][5].piece = black_bishops[1]
-            self.squares[0][3].piece = white_queen
-            self.squares[7][3].piece = black_queen
-            self.squares[0][4].piece = white_king
-            self.squares[7][4].piece = black_king
+            self.squares[0][4].piece = white_queen
+            self.squares[7][4].piece = black_queen
+            self.squares[0][3].piece = white_king
+            self.squares[7][3].piece = black_king
 
     def move(self, possible_moves: List[Move], move: Move):
         if move not in possible_moves:
@@ -120,3 +120,12 @@ class Board:
         self.squares[move.target_row][move.target_col].piece = move.piece
         self.squares[move.initial_row][move.initial_col].piece = None
         move.piece.moved = True
+
+    
+    def find_square_of_piece(self, name, color):
+        for row in range(ROWS):
+            for col in range(COLS):
+                square = self.squares[row][col]
+                if square.has_piece() and square.piece.name == name and square.piece.color == color:
+                    return square
+            return None

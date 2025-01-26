@@ -10,8 +10,8 @@ class Square:
     def has_piece(self):
         return self.piece is not None
 
-    def has_ally(self, piece: Piece):
-        return self.piece and self.piece.color == piece.color
+    def has_ally(self, color):
+        return self.piece and self.piece.color == color
 
-    def has_enemy(self, piece: Piece):
-        return self.piece and self.piece.color != piece.color
+    def has_enemy(self, color):
+        return self.piece and self.piece.color != color

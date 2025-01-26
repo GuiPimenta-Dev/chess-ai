@@ -22,3 +22,6 @@ class Move:
 
     def __repr__(self):
         return f"({self.row}, {self.col})"
+
+    def __eq__(self, other):
+        return self.initial_row == other.initial_row and self.initial_col == other.initial_col and self.target_row == other.target_row and self.target_col == other.target_col and self.piece.id == other.piece.id
