@@ -15,14 +15,12 @@ class Board:
         self.moves = []
         self.possible_moves = self._get_all_possible_moves(self.turn)
 
+    def is_game_over(self):
+        return False
+
     def move(self, row, col, piece):
         moves = []
         
-        promotion = []
-        for possible_move in self.possible_moves:
-            if possible_move.promotion:
-                promotion.append(possible_move)
-                
         for possible_move in self.possible_moves:
             if (
                 possible_move.target_row == row
@@ -49,9 +47,6 @@ class Board:
                 if piece and piece.color == color:
                     moves.extend(piece.get_possible_moves(row, col, self.grid))
         
-        for move in moves:
-            if move.promotion:
-                pass
         return moves
 
     def _switch_turn(self):

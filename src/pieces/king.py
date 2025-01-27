@@ -6,7 +6,7 @@ from pieces import Piece
 class King(Piece):
     def __init__(self, id, direction, color, asset):
         super().__init__(
-            id=id, name="King", direction=direction, color=color, asset=asset
+            id=id, name="King", direction=direction, color=color, asset=asset,value=1000
         )
 
     def _get_possible_moves_in_each_direction(self, square, grid):

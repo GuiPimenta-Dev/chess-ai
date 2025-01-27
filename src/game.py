@@ -170,6 +170,31 @@ class Game:
     #             return move
     #     return None
 
+    def show_ai_best_move(self, screen, best_move):
+        if best_move:
+            initial_row = best_move.initial_row
+            initial_col = best_move.initial_col
+            target_row = best_move.target_row
+            target_col = best_move.target_col
+
+            initial_rect = (
+                initial_col * SQUARE_SIZE,
+                initial_row * SQUARE_SIZE,
+                SQUARE_SIZE,
+                SQUARE_SIZE,
+            )
+            target_rect = (
+                target_col * SQUARE_SIZE,
+                target_row * SQUARE_SIZE,
+                SQUARE_SIZE,
+                SQUARE_SIZE,
+            )
+
+            color = (128, 0, 128)
+
+            pygame.draw.rect(screen, color, initial_rect, width=3)
+            pygame.draw.rect(screen, color, target_rect)
+
     def show_possible_moves(self, screen):
         for move in self.board.possible_moves:
             if move.piece == self.dragger.piece:

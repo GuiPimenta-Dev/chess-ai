@@ -1,8 +1,11 @@
+import copy
+import time
 import pygame
 import sys
 
 from const import COLS, ROWS, WIDTH, HEIGHT, SQUARE_SIZE
 from game import Game
+from minimax.minimax import Minimax
 
 
 class Main:
@@ -10,10 +13,27 @@ class Main:
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Chess")
-        self.game = Game(play_as_white=False)
+        self.play_as_white = True
+        self.game = Game(play_as_white=self.play_as_white)
         self.board = self.game.board
         self.grid = self.board.grid
         self.dragger = self.game.dragger
+        self.minimax = Minimax(self.board, max_depth=2)  # Initialize Minimax
+        self.round = 1
+        self.best_move = None
+        
+    def ai_move(self):
+        """
+        Use the Minimax algorithm to calculate and execute the best move for the AI.
+        """
+        color = "white" if self.play_as_white else "black"
+        self.best_move = self.minimax.find_best_move(color)
+        if self.best_move:
+            # self.minimax.simulate_move(copy.deepcody(self.board), self.best_move)
+            self.game.show_ai_best_move(self.screen, self.best_move)
+            # self.board.move(
+            #     self.best_move.target_row, self.best_move.target_col, self.best_move.piece
+            # )
 
     def run(self):
         while True:
@@ -21,8 +41,10 @@ class Main:
             self.game.show_hover(self.screen)
             self.game.show_last_move(self.screen)
             self.game.show_check(self.screen)
+            self.game.show_ai_best_move(self.screen, self.best_move)
             self.game.show_pieces(self.screen)
             self.game.show_possible_moves(self.screen)
+
 
             if self.dragger.dragging:
                 self.dragger.update_blit(self.screen)
@@ -64,6 +86,7 @@ class Main:
                         self.game.show_hover(self.screen)
                         self.game.show_last_move(self.screen)
                         self.game.show_check(self.screen)
+                        self.game.show_ai_best_move(self.screen, self.best_move)
                         self.game.show_pieces(self.screen)
                         self.game.show_possible_moves(self.screen)
                         self.dragger.update_blit(self.screen)
@@ -74,6 +97,13 @@ class Main:
                     clicked_col = self.dragger.mouse_x // SQUARE_SIZE
                     self.board.move(clicked_row, clicked_col, self.dragger.piece)
                     self.dragger.undrag_piece()
+                    time.sleep(0.1)
+                    self.round += 1
+
+                    # Trigger AI's turn after the player moves
+                    ai_color = "white" if self.play_as_white else "black"
+                    if not self.board.is_game_over() and self.round >= 4 and self.board.turn == ai_color:
+                        self.ai_move()
 
                 elif event.type == pygame.QUIT:
                     pygame.quit()
