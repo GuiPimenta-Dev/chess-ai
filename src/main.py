@@ -18,7 +18,7 @@ class Main:
         self.board = self.game.board
         self.grid = self.board.grid
         self.dragger = self.game.dragger
-        self.minimax = Minimax(self.board, max_depth=1)  # Initialize Minimax
+        self.minimax = Minimax(self.board, max_depth=2)  # Initialize Minimax
         self.round = 1
         self.best_move = None
 

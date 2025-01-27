@@ -56,11 +56,11 @@ class Board:
         is_black_mate = self.is_check_mate("black")
         if is_white_mate:
             print("White is in checkmate")
-            sys.exit(0)
+            input()
             
         if is_black_mate:
             print("Black is in checkmate")
-            sys.exit(0)
+            input()
             
         white_possible_moves = self.get_possible_moves_by_color("white")
         black_possible_moves = self.get_possible_moves_by_color("black")
