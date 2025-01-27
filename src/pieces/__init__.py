@@ -1,3 +1,4 @@
+import copy
 import os
 from abc import ABC, abstractmethod
 from typing import List, NamedTuple
@@ -21,6 +22,7 @@ class Piece(ABC):
         name,
         color,
         asset,
+        fen_symbol,
         direction: Direction,
         value=None,
         texture_rect=None,
@@ -29,6 +31,7 @@ class Piece(ABC):
         self.name = name
         self.color = color
         self.value = value
+        self.fen_symbol = fen_symbol
         self.texture_size = 80
         self.direction = direction
         self.asset = os.path.join(ASSETS_DIR, "80px", asset)

@@ -6,9 +6,9 @@ from square import Square
 
 
 class Pawn(Piece):
-    def __init__(self, id, direction, color, asset):
+    def __init__(self, id, direction, color, asset, fen_symbol="p"):
         super().__init__(
-            id=id, name="Pawn", direction=direction, color=color, asset=asset, value=1
+            id=id, name="Pawn", fen_symbol=fen_symbol, direction=direction, color=color, asset=asset, value=1
         )
 
     def _get_possible_moves_in_each_direction(self, square: Square, grid):
@@ -109,9 +109,9 @@ class Pawn(Piece):
 
 class BlackPawn(Pawn):
     def __init__(self, id, direction):
-        super().__init__(id, direction, "black", "black_pawn.png")
+        super().__init__(id, direction, "black", "black_pawn.png", fen_symbol="p")
 
 
 class WhitePawn(Pawn):
     def __init__(self, id, direction):
-        super().__init__(id, direction, "white", "white_pawn.png")
+        super().__init__(id, direction, "white", "white_pawn.png", fen_symbol="P")

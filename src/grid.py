@@ -1,3 +1,4 @@
+import copy
 from const import COLS, ROWS
 from pieces import Direction
 from pieces.bishop import BlackBishop, WhiteBishop
@@ -11,9 +12,13 @@ from square import Square
 
 class Grid:
     def __init__(self, play_as_white):
-        self.squares = [[None for _ in range(COLS)] for _ in range(COLS)]
+        self.play_as_white = play_as_white
+        self.turn = "white"
+        self.squares = [[None for _ in range(COLS)] for _ in range(ROWS)]
         self._create()
+        self._add_uci_notations()
         self._add_pieces(play_as_white)
+        self.fen = self.generate_fen()
         self.moves = []
 
     def get_last_move(self):
@@ -26,32 +31,31 @@ class Grid:
             for col in range(COLS):
                 self.squares[row][col] = Square(row, col)
 
-    def _add_pieces(self, play_as_white):
+    def _add_uci_notations(self):
+        for row in range(ROWS):
+            for col in range(COLS):
+                # UCI notation: Columns are letters ('a' to 'h') and rows are numbers ('1' to '8')
+                file = chr(ord('a') + col)
+                rank = str(ROWS - row)  # Flip row index to start from the bottom
+                self.squares[row][col].uci = f"{file}{rank}"
 
+    def _add_pieces(self, play_as_white):
         if play_as_white:
             white_pawns = [WhitePawn(i, direction=Direction.UP) for i in range(1, 9)]
             white_rooks = [WhiteRook(i, direction=Direction.UP) for i in range(1, 3)]
-            white_knights = [
-                WhiteKnight(i, direction=Direction.UP) for i in range(1, 3)
-            ]
-            white_bishops = [
-                WhiteBishop(i, direction=Direction.UP) for i in range(1, 3)
-            ]
+            white_knights = [WhiteKnight(i, direction=Direction.UP) for i in range(1, 3)]
+            white_bishops = [WhiteBishop(i, direction=Direction.UP) for i in range(1, 3)]
             white_queen = WhiteQueen(id=1, direction=Direction.UP)
             white_king = WhiteKing(id=1, direction=Direction.UP)
 
             black_rooks = [BlackRook(i, direction=Direction.DOWN) for i in range(1, 3)]
             black_pawns = [BlackPawn(i, direction=Direction.DOWN) for i in range(1, 9)]
-            black_knights = [
-                BlackKnight(i, direction=Direction.DOWN) for i in range(1, 3)
-            ]
-            black_bishops = [
-                BlackBishop(i, direction=Direction.DOWN) for i in range(1, 3)
-            ]
+            black_knights = [BlackKnight(i, direction=Direction.DOWN) for i in range(1, 3)]
+            black_bishops = [BlackBishop(i, direction=Direction.DOWN) for i in range(1, 3)]
             black_queen = BlackQueen(id=1, direction=Direction.DOWN)
             black_king = BlackKing(id=1, direction=Direction.DOWN)
 
-            for i in range(ROWS):
+            for i in range(COLS):
                 self.squares[1][i].piece = black_pawns[i]
                 self.squares[6][i].piece = white_pawns[i]
 
@@ -73,30 +77,21 @@ class Grid:
             self.squares[7][4].piece = white_king
 
         else:
-
             white_pawns = [WhitePawn(i, direction=Direction.DOWN) for i in range(1, 9)]
             white_rooks = [WhiteRook(i, direction=Direction.DOWN) for i in range(1, 3)]
-            white_knights = [
-                WhiteKnight(i, direction=Direction.DOWN) for i in range(1, 3)
-            ]
-            white_bishops = [
-                WhiteBishop(i, direction=Direction.DOWN) for i in range(1, 3)
-            ]
+            white_knights = [WhiteKnight(i, direction=Direction.DOWN) for i in range(1, 3)]
+            white_bishops = [WhiteBishop(i, direction=Direction.DOWN) for i in range(1, 3)]
             white_queen = WhiteQueen(id=1, direction=Direction.DOWN)
             white_king = WhiteKing(id=1, direction=Direction.DOWN)
 
             black_rooks = [BlackRook(i, direction=Direction.UP) for i in range(1, 3)]
             black_pawns = [BlackPawn(i, direction=Direction.UP) for i in range(1, 9)]
-            black_knights = [
-                BlackKnight(i, direction=Direction.UP) for i in range(1, 3)
-            ]
-            black_bishops = [
-                BlackBishop(i, direction=Direction.UP) for i in range(1, 3)
-            ]
+            black_knights = [BlackKnight(i, direction=Direction.UP) for i in range(1, 3)]
+            black_bishops = [BlackBishop(i, direction=Direction.UP) for i in range(1, 3)]
             black_queen = BlackQueen(id=1, direction=Direction.UP)
             black_king = BlackKing(id=1, direction=Direction.UP)
 
-            for i in range(ROWS):
+            for i in range(COLS):
                 self.squares[1][i].piece = white_pawns[i]
                 self.squares[6][i].piece = black_pawns[i]
 
@@ -175,6 +170,9 @@ class Grid:
             self.squares[move.target_row][move.target_col].piece = move.piece
             self.squares[move.initial_row][move.initial_col].piece = None
 
+        self.fen = self.generate_fen()
+        self.turn = "black" if self.turn == "white" else "white"
+        
     def get_squares_between(self, move):
         initial_square = self.get_square_by_row_and_col(
             move.initial_row, move.initial_col
@@ -217,3 +215,33 @@ class Grid:
             return self.squares[row][col]
         except IndexError:
             return Square(row, col)
+    
+    def generate_fen(self):
+        # 1. Generate board representation
+        fen_rows = []
+
+        for row in self.squares:
+            fen_row = ""
+            empty_count = 0
+
+            for square in row:
+                if square.piece:
+                    if empty_count > 0:
+                        fen_row += str(empty_count)
+                        empty_count = 0
+                    fen_row += square.piece.fen_symbol
+                else:
+                    empty_count += 1
+
+            if empty_count > 0:
+                fen_row += str(empty_count)
+
+            fen_rows.append(fen_row)
+
+        board_fen = '/'.join(fen_rows)
+
+        # 2. Determine active color
+        active_color = self.turn[0].lower()
+
+        # Combine all parts
+        return f"{board_fen} {active_color} {active_color} - - 0 1"

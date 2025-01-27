@@ -1,3 +1,4 @@
+import sys
 from typing import List
 from const import COLS, ROWS
 from grid import Grid
@@ -8,8 +9,8 @@ from square import Square
 
 
 class Board:
-    def __init__(self, play_as_white=True):
-        self.grid = Grid(play_as_white)
+    def __init__(self, play_as_white=True, grid=None):
+        self.grid = grid or Grid(play_as_white)
         self.turn = "white"
         self.checks = {"white": [], "black": []}
         self.moves = []
@@ -51,9 +52,22 @@ class Board:
 
     def _switch_turn(self):
         self.turn = "white" if self.turn == "black" else "black"
+        is_white_mate = self.is_check_mate("white")
+        is_black_mate = self.is_check_mate("black")
+        if is_white_mate:
+            print("White is in checkmate")
+            sys.exit(0)
+            
+        if is_black_mate:
+            print("Black is in checkmate")
+            sys.exit(0)
+            
         white_possible_moves = self.get_possible_moves_by_color("white")
         black_possible_moves = self.get_possible_moves_by_color("black")
         self.possible_moves = white_possible_moves + black_possible_moves
+
+    def is_check_mate(self, color):
+        return self.is_king_in_check(color) and not self.get_possible_moves_by_color(color)
 
     def get_possible_moves_by_color(self, color):
         is_king_in_check = self.is_king_in_check(color)
@@ -158,3 +172,20 @@ class Board:
                 checks.append(move)
 
         return checks
+
+    def get_state(self):
+        """
+        Retorna uma representação única do estado atual do tabuleiro.
+        Aqui, estamos criando uma tupla contendo a posição e o tipo das peças.
+        """
+        state = []
+        for row in range(ROWS):
+            for col in range(COLS):
+                square = self.grid.get_square_by_row_and_col(row, col)
+                if square.has_piece():
+                    piece = square.piece
+                    # Representação simples da peça como uma tupla (cor, tipo)
+                    state.append((row, col, piece.color, piece.__class__.__name__))
+                else:
+                    state.append((row, col, None))  # Nenhuma peça na posição
+        return tuple(state)  # Retorna uma tupla para ser usada como hashable

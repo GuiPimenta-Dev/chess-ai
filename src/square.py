@@ -6,6 +6,7 @@ class Square:
         self.row = row
         self.col = col
         self.piece = piece
+        self.uci = None
 
     def is_empty(self):
         return self.piece is None

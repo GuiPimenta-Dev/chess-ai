@@ -4,9 +4,9 @@ from pieces import Piece
 
 
 class Knight(Piece):
-    def __init__(self, id, direction, color, asset):
+    def __init__(self, id, direction, color, asset, fen_symbol):
         super().__init__(
-            id=id, name="Knight", direction=direction, color=color, asset=asset, value=3
+            id=id, name="Knight", direction=direction,fen_symbol=fen_symbol, color=color, asset=asset, value=3
         )
 
     def _get_possible_moves_in_each_direction(self, square, _):
@@ -43,9 +43,9 @@ class Knight(Piece):
 
 class BlackKnight(Knight):
     def __init__(self, id, direction):
-        super().__init__(id, direction, "black", "black_knight.png")
+        super().__init__(id, direction, "black", "black_knight.png", fen_symbol="n")
 
 
 class WhiteKnight(Knight):
     def __init__(self, id, direction):
-        super().__init__(id, direction, "white", "white_knight.png")
+        super().__init__(id, direction, "white", "white_knight.png", fen_symbol="N")

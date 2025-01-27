@@ -18,9 +18,10 @@ class Main:
         self.board = self.game.board
         self.grid = self.board.grid
         self.dragger = self.game.dragger
-        self.minimax = Minimax(self.board, max_depth=2)  # Initialize Minimax
+        self.minimax = Minimax(self.board, max_depth=1)  # Initialize Minimax
         self.round = 1
         self.best_move = None
+
         
     def ai_move(self):
         """
@@ -29,11 +30,8 @@ class Main:
         color = "white" if self.play_as_white else "black"
         self.best_move = self.minimax.find_best_move(color)
         if self.best_move:
-            # self.minimax.simulate_move(copy.deepcody(self.board), self.best_move)
             self.game.show_ai_best_move(self.screen, self.best_move)
-            # self.board.move(
-            #     self.best_move.target_row, self.best_move.target_col, self.best_move.piece
-            # )
+        
 
     def run(self):
         while True:
@@ -97,12 +95,12 @@ class Main:
                     clicked_col = self.dragger.mouse_x // SQUARE_SIZE
                     self.board.move(clicked_row, clicked_col, self.dragger.piece)
                     self.dragger.undrag_piece()
-                    time.sleep(0.1)
-                    self.round += 1
 
                     # Trigger AI's turn after the player moves
                     ai_color = "white" if self.play_as_white else "black"
-                    if not self.board.is_game_over() and self.round >= 4 and self.board.turn == ai_color:
+                    if ai_color == self.board.turn:
+                        self.round += 1
+                    if not self.board.is_game_over() and self.round > 4 and self.board.turn == ai_color:
                         self.ai_move()
 
                 elif event.type == pygame.QUIT:
