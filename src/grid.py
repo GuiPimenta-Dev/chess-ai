@@ -119,11 +119,6 @@ class Grid:
 
     def move_piece(self, move):
         self.moves.append(move)
-        
-        if move.promotion:
-            self.squares[move.target_row][move.target_col].piece = None
-            self.squares[move.target_row][move.target_col].piece = move.promotion
-            
 
         if move.en_passant:
             opponent_row = move.target_row

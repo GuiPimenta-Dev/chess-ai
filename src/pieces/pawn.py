@@ -13,7 +13,6 @@ class Pawn(Piece):
 
     def _get_possible_moves_in_each_direction(self, square: Square, grid):
         possible_moves = []
-
         
         steps = 1 if len(self.moves) > 0 else 2
         for i in range(1, steps + 1):
@@ -50,7 +49,6 @@ class Pawn(Piece):
                     ]
                 )
         possible_moves.extend(self._get_en_passant_moves(square, grid))
-        # possible_moves.extend(self._get_promotion_moves(square, grid))
 
         return possible_moves
 

@@ -3,6 +3,7 @@ from const import COLS, ROWS
 from grid import Grid
 from move import Move
 from pieces import Piece
+from pieces.queen import Queen
 from square import Square
 
 
@@ -37,6 +38,7 @@ class Board:
         self.grid.move_piece(move)
         self.moves.append(move)
         move.piece.add_move(move)
+        self._verify_promotion()
         self._switch_turn()
 
     def _get_all_possible_moves(self, color):
@@ -134,6 +136,20 @@ class Board:
                 return True
 
         return False
+
+    def _verify_promotion(self):
+        white_pawns = self.grid.get_squares_by_piece_name_and_color("Pawn", "white")
+        black_pawns = self.grid.get_squares_by_piece_name_and_color("Pawn", "black")
+        all_pawns = white_pawns + black_pawns
+        
+        for pawn_square in all_pawns:
+            if (
+                pawn_square.row == 0
+                or pawn_square.row == ROWS - 1
+            ):
+                existent_queens = self.grid.get_squares_by_piece_name_and_color("Queen", pawn_square.piece.color)
+                asset = "black_queen.png" if pawn_square.piece.color == "black" else "white_queen.png"
+                self.grid.squares[pawn_square.row][pawn_square.col].piece = Queen(id=len(existent_queens) + 1, color=pawn_square.piece.color, asset=asset, direction=pawn_square.piece.direction)
 
     def get_checks(self, color: str) -> List[Move]:
         checks = []
