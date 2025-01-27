@@ -18,7 +18,15 @@ class Rook(Piece):
                 new_row = square.row + i * dr
                 new_col = square.col + i * dc
                 if 0 <= new_row < 8 and 0 <= new_col < 8:
-                    directional_moves.append(Move(initial_row=square.row, initial_col=square.col, target_row=new_row, target_col=new_col, piece=self))
+                    directional_moves.append(
+                        Move(
+                            initial_row=square.row,
+                            initial_col=square.col,
+                            target_row=new_row,
+                            target_col=new_col,
+                            piece=self,
+                        )
+                    )
                 else:
                     break
 

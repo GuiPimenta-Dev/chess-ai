@@ -36,7 +36,7 @@ class Piece(ABC):
         self.moving = False
         self.moves = []
         self.possible_moves = []
-    
+
     @property
     def has_moved(self):
         return len(self.moves) > 0
@@ -53,13 +53,18 @@ class Piece(ABC):
 
         possible_moves = []
         moves = []
-            
 
-        possible_moves = self._get_possible_moves_in_each_direction(initial_square, grid)
+        possible_moves = self._get_possible_moves_in_each_direction(
+            initial_square, grid
+        )
         for possible_direction in possible_moves:
             for possible_square in possible_direction:
-                target_square = grid.get_square_by_row_and_col(possible_square.target_row, possible_square.target_col)
-                if not target_square.has_piece():
+                target_square = grid.get_square_by_row_and_col(
+                    possible_square.target_row, possible_square.target_col
+                )
+                if possible_square.promotion:
+                    moves.append(possible_square)
+                elif not target_square.has_piece():
                     if possible_square.is_inside_grid():
                         moves.append(possible_square)
                 elif target_square.has_enemy(self.color):
@@ -69,15 +74,15 @@ class Piece(ABC):
                     break
                 else:
                     break
-        
+
         return moves
-        
+
     def add_move(self, move: Move):
         self.moves.append(move)
-    
+
     def set_moving(self, moving):
         self.moving = moving
-    
+
     @abstractmethod
     def _get_possible_moves_in_each_direction(self, square: Square, grid):
         pass

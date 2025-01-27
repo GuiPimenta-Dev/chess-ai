@@ -2,6 +2,7 @@ from const import COLS, ROWS
 from move import Move
 from pieces import Piece
 
+
 class King(Piece):
     def __init__(self, id, direction, color, asset):
         super().__init__(
@@ -25,7 +26,17 @@ class King(Piece):
             new_row = square.row + dr
             new_col = square.col + dc
             if 0 <= new_row < ROWS and 0 <= new_col < COLS:
-                possible_moves.append([Move(initial_row=square.row, initial_col=square.col, target_row=new_row, target_col=new_col, piece=square.piece)])
+                possible_moves.append(
+                    [
+                        Move(
+                            initial_row=square.row,
+                            initial_col=square.col,
+                            target_row=new_row,
+                            target_col=new_col,
+                            piece=square.piece,
+                        )
+                    ]
+                )
 
         # Castling
         if not self.has_moved:
@@ -33,7 +44,7 @@ class King(Piece):
             for rook_square in rook_squares:
                 if rook_square.piece.has_moved:
                     continue
-                
+
                 if self.can_castle(rook_square, square, grid):
                     # Add castling moves to the possible moves
                     new_king_row = square.row
@@ -41,7 +52,18 @@ class King(Piece):
                         new_king_col = square.col + 2  # King moves to column 6
                     else:  # Castling to the left
                         new_king_col = square.col - 2  # King moves to column 2
-                    possible_moves.append([Move(initial_row=square.row, initial_col=square.col, target_row=new_king_row, target_col=new_king_col, piece=square.piece, castling_square=rook_square)])
+                    possible_moves.append(
+                        [
+                            Move(
+                                initial_row=square.row,
+                                initial_col=square.col,
+                                target_row=new_king_row,
+                                target_col=new_king_col,
+                                piece=square.piece,
+                                castling_square=rook_square,
+                            )
+                        ]
+                    )
 
         return possible_moves
 
@@ -70,13 +92,12 @@ class King(Piece):
         # Here, you could add a check to make sure the King doesn't move through or end in check
         # For now, we assume it's safe to castle.
         return True
-        
-                
-    
-    
+
+
 class BlackKing(King):
     def __init__(self, id, direction):
         super().__init__(id, direction, "black", "black_king.png")
+
 
 class WhiteKing(King):
     def __init__(self, id, direction):

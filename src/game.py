@@ -8,6 +8,7 @@ from pieces.pawn import Pawn
 from square import Square
 import copy
 
+
 class Game:
     def __init__(self, play_as_white=True):
         self.play_as_white = play_as_white
@@ -15,14 +16,8 @@ class Game:
         self.board = Board(play_as_white)
         self.dragger = Dragger()
         self.check = {
-            "white": {
-                "checks": [],
-                "protective_moves": []
-            },
-            "black": {
-                "checks": [],
-                "protective_moves": []
-            }
+            "white": {"checks": [], "protective_moves": []},
+            "black": {"checks": [], "protective_moves": []},
         }
 
     def show_bg(self, screen):
@@ -64,18 +59,32 @@ class Game:
             target_row = last_move.target_row
             target_col = last_move.target_col
 
-            initial_rect = (initial_col * SQUARE_SIZE, initial_row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
-            target_rect = (target_col * SQUARE_SIZE, target_row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
-            
+            initial_rect = (
+                initial_col * SQUARE_SIZE,
+                initial_row * SQUARE_SIZE,
+                SQUARE_SIZE,
+                SQUARE_SIZE,
+            )
+            target_rect = (
+                target_col * SQUARE_SIZE,
+                target_row * SQUARE_SIZE,
+                SQUARE_SIZE,
+                SQUARE_SIZE,
+            )
+
             color = (172, 195, 51)
             pygame.draw.rect(screen, color, initial_rect)
             pygame.draw.rect(screen, color, target_rect)
 
-
     def show_hover(self, screen):
         if self.hovered_square:
             color = (180, 180, 180)
-            rect = (self.hovered_square.col * SQUARE_SIZE, self.hovered_square.row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
+            rect = (
+                self.hovered_square.col * SQUARE_SIZE,
+                self.hovered_square.row * SQUARE_SIZE,
+                SQUARE_SIZE,
+                SQUARE_SIZE,
+            )
             pygame.draw.rect(screen, color, rect, width=3)
 
     def show_check(self, screen):
@@ -85,15 +94,19 @@ class Game:
                 squares = []
                 for move in self.board.get_checks(color):
                     squares += self.board.grid.get_squares_between(move)
-                
+
                 for square in squares:
-                    rect = (square.col * SQUARE_SIZE, square.row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
+                    rect = (
+                        square.col * SQUARE_SIZE,
+                        square.row * SQUARE_SIZE,
+                        SQUARE_SIZE,
+                        SQUARE_SIZE,
+                    )
                     pygame.draw.rect(screen, check_color, rect)
 
     def set_hover(self, row, col):
         self.hovered_square = self.board.grid.get_square_by_row_and_col(row, col)
-    
-  
+
     # def _verify_if_king_is_checked(self, color):
     #     checks = self._get_checks(color)
     #     protective_moves = self._get_protective_moves(color) if checks else []
@@ -124,7 +137,7 @@ class Game:
     #     for row in range(ROWS):
     #         for col in range(COLS):
     #             square = self.board.squares[row][col]
-                
+
     #             # Ensure the square has a piece of the specified color
     #             if square.has_piece() and square.piece.color == color:
     #                 piece = square.piece
@@ -157,14 +170,13 @@ class Game:
     #             return move
     #     return None
 
-  
     def show_possible_moves(self, screen):
         for move in self.board.possible_moves:
             if move.piece == self.dragger.piece:
                 center_x = move.target_col * SQUARE_SIZE + SQUARE_SIZE // 2
                 center_y = move.target_row * SQUARE_SIZE + SQUARE_SIZE // 2
                 radius = SQUARE_SIZE // 4
-                color = (100, 100, 100, 60) if not move.captured_piece else (200, 100, 100)
+                color = (
+                    (100, 100, 100, 60) if not move.captured_piece else (200, 100, 100)
+                )
                 pygame.draw.circle(screen, color, (center_x, center_y), radius)
-
-    
