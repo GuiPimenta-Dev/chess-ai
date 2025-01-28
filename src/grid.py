@@ -8,17 +8,18 @@ from pieces.pawn import BlackPawn, WhitePawn
 from pieces.queen import BlackQueen, WhiteQueen
 from pieces.rook import BlackRook, WhiteRook
 from square import Square
-
+import chess
 
 class Grid:
     def __init__(self, play_as_white):
         self.play_as_white = play_as_white
         self.turn = "white"
         self.squares = [[None for _ in range(COLS)] for _ in range(ROWS)]
+        self.board = chess.Board()
         self._create()
         self._add_uci_notations()
         self._add_pieces(play_as_white)
-        self.fen = self.generate_fen()
+        self.fen = self.board.fen()
         self.moves = []
 
     def get_last_move(self):
@@ -32,14 +33,23 @@ class Grid:
                 self.squares[row][col] = Square(row, col)
 
     def _add_uci_notations(self):
-        for row in range(ROWS):
-            for col in range(COLS):
-                # UCI notation: Columns are letters ('a' to 'h') and rows are numbers ('1' to '8')
-                file = chr(ord('a') + col)
-                rank = str(ROWS - row)  # Flip row index to start from the bottom
-                self.squares[row][col].uci = f"{file}{rank}"
+        if self.play_as_white:
+            for row in range(ROWS):
+                for col in range(COLS):
+                    # UCI notation: Columns are letters ('a' to 'h') and rows are numbers ('1' to '8')
+                    file = chr(ord('a') + col)
+                    rank = str(ROWS - row)  # Flip row index to start from the bottom
+                    self.squares[row][col].uci = f"{file}{rank}"
+        else:
+            for row in range(ROWS):
+                for col in range(COLS):
+                    file = chr(ord('h') - col)
+                    rank = str(row + 1)
+                    self.squares[row][col].uci = f"{file}{rank}"
 
     def _add_pieces(self, play_as_white):
+        
+        
         if play_as_white:
             white_pawns = [WhitePawn(i, direction=Direction.UP) for i in range(1, 9)]
             white_rooks = [WhiteRook(i, direction=Direction.UP) for i in range(1, 3)]
@@ -113,6 +123,16 @@ class Grid:
             self.squares[7][3].piece = black_king
 
     def move_piece(self, move):
+        from_square = self.get_square_by_row_and_col(move.initial_row, move.initial_col)
+        to_square = self.get_square_by_row_and_col(move.target_row, move.target_col)
+        uci = f"{from_square.uci}{to_square.uci}"
+        chess_move = chess.Move.from_uci(uci)
+        if chess_move not in self.board.legal_moves:
+            print("Illegal move")
+            return
+        self.board.push(chess_move)
+        self.fen = self.board.fen()
+        
         self.moves.append(move)
 
         if move.en_passant:
@@ -169,8 +189,9 @@ class Grid:
             # Regular move (non-castling)
             self.squares[move.target_row][move.target_col].piece = move.piece
             self.squares[move.initial_row][move.initial_col].piece = None
-
-        self.fen = self.generate_fen()
+        
+        
+        
         self.turn = "black" if self.turn == "white" else "white"
         
     def get_squares_between(self, move):
@@ -192,6 +213,12 @@ class Grid:
                 squares_between.append(self.squares[new_row][new_col])
 
         return squares_between
+
+    def get_square_by_uci(self, uci):
+        for row in range(ROWS):
+            for col in range(COLS):
+                if self.squares[row][col].uci == uci:
+                    return self.squares[row][col]
 
     def get_squares_by_piece_name_and_color(self, name, color):
         squares = []
@@ -215,33 +242,3 @@ class Grid:
             return self.squares[row][col]
         except IndexError:
             return Square(row, col)
-    
-    def generate_fen(self):
-        # 1. Generate board representation
-        fen_rows = []
-
-        for row in self.squares:
-            fen_row = ""
-            empty_count = 0
-
-            for square in row:
-                if square.piece:
-                    if empty_count > 0:
-                        fen_row += str(empty_count)
-                        empty_count = 0
-                    fen_row += square.piece.fen_symbol
-                else:
-                    empty_count += 1
-
-            if empty_count > 0:
-                fen_row += str(empty_count)
-
-            fen_rows.append(fen_row)
-
-        board_fen = '/'.join(fen_rows)
-
-        # 2. Determine active color
-        active_color = self.turn[0].lower()
-
-        # Combine all parts
-        return f"{board_fen} {active_color} {active_color} - - 0 1"

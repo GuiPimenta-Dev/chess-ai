@@ -6,6 +6,7 @@ import sys
 from const import COLS, ROWS, WIDTH, HEIGHT, SQUARE_SIZE
 from game import Game
 from minimax.minimax import Minimax
+from stockfish.stockfish import Stockfish
 
 
 class Main:
@@ -19,6 +20,7 @@ class Main:
         self.grid = self.board.grid
         self.dragger = self.game.dragger
         self.minimax = Minimax(self.board, max_depth=2)  # Initialize Minimax
+        self.stockfish = Stockfish()  # Initialize Stockfish
         self.round = 1
         self.best_move = None
 
@@ -27,8 +29,8 @@ class Main:
         """
         Use the Minimax algorithm to calculate and execute the best move for the AI.
         """
-        color = "white" if self.play_as_white else "black"
-        self.best_move = self.minimax.find_best_move(color)
+        fen = self.grid.fen
+        self.best_move = self.stockfish.get_best_move(fen)
         if self.best_move:
             self.game.show_ai_best_move(self.screen, self.best_move)
         

@@ -172,10 +172,14 @@ class Game:
 
     def show_ai_best_move(self, screen, best_move):
         if best_move:
-            initial_row = best_move.initial_row
-            initial_col = best_move.initial_col
-            target_row = best_move.target_row
-            target_col = best_move.target_col
+            first_uci = best_move[:2]
+            second_uci = best_move[2:]
+            first_square = self.board.grid.get_square_by_uci(first_uci)
+            second_square = self.board.grid.get_square_by_uci(second_uci)
+            initial_row = first_square.row
+            initial_col = first_square.col
+            target_row = second_square.row
+            target_col = second_square.col
 
             initial_rect = (
                 initial_col * SQUARE_SIZE,
@@ -192,7 +196,7 @@ class Game:
 
             color = (128, 0, 128)
 
-            pygame.draw.rect(screen, color, initial_rect, width=3)
+            pygame.draw.rect(screen, color, initial_rect, width=10)
             pygame.draw.rect(screen, color, target_rect)
 
     def show_possible_moves(self, screen):
